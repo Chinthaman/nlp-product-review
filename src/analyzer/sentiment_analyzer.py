@@ -3,7 +3,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 class ProductSentimentAnalyzer:
     def __init__(self):
         self.analyzer = SentimentIntensityAnalyzer()
-    
+
     def analyze_review(self, review):
         """Single review analysis - used by both apps"""
         scores = self.analyzer.polarity_scores(review)
@@ -46,3 +46,39 @@ class ProductSentimentAnalyzer:
         elif compound_score <= -0.05:
             return 'negative'
         return 'neutral'
+
+    def generate_customer_conclusion(self, results):
+        """Generate detailed conclusion for customers"""
+        avg_scores = results['average_scores']
+        pos_count = len(results['positive'])
+        neg_count = len(results['negative'])
+        total_reviews = len(results['positive']) + len(results['negative']) + len(results['neutral'])
+        
+        # Calculate percentages
+        pos_percentage = (pos_count / total_reviews) * 100
+        neg_percentage = (neg_count / total_reviews) * 100
+        
+        # Generate main conclusion
+        if avg_scores['compound'] >= 0.05:
+            main_conclusion = (
+                "✨ Product Highlights:\n"
+                f"• {int(pos_percentage)}% of customers had a positive experience\n"
+                "• Strong points: Quality and customer satisfaction\n"
+                "• Recommended for: Users looking for reliable products"
+            )
+        elif avg_scores['compound'] <= -0.05:
+            main_conclusion = (
+                "⚠️ Consider Before Buying:\n"
+                f"• {int(neg_percentage)}% of customers reported concerns\n"
+                "• Common issues: Product durability and expectations\n"
+                "• Suggestion: Compare with similar products"
+            )
+        else:
+            main_conclusion = (
+                "📝 Balanced Feedback:\n"
+                "• Product meets basic expectations\n"
+                "• Mixed reviews on features and quality\n"
+                "• Consider your specific needs before purchase"
+            )
+        
+        return main_conclusion
