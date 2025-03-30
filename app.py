@@ -2,6 +2,9 @@ import pandas as pd
 import json
 from src.utils.ssl_handler import configure_ssl
 from src.analyzer.sentiment_analyzer import ProductSentimentAnalyzer
+import streamlit as st
+# Import other necessary modules
+from utils.customization import apply_customizations
 
 def load_comments(file_path):
     with open(file_path, 'r') as file:
@@ -42,6 +45,25 @@ def main():
     
     print("\nSummary:")
     print(df)
+
+    # Apply customizations first
+    custom_settings = apply_customizations()
+    
+    # If customizations were applied, use them
+    if custom_settings:
+        st.title(custom_settings.get("app_title", "NLP Sentiment Analyzer"))
+        st.markdown(custom_settings.get("welcome_message", "Welcome to the NLP Sentiment Analyzer!"))
+    else:
+        # Default title and welcome message if no customizations
+        st.title("NLP Sentiment Analyzer")
+        st.markdown("Welcome to the NLP Sentiment Analyzer!")
+    
+    # Rest of your application code
+    # ...
+    
+    # Use footer from customizations if available
+    if custom_settings and "footer_text" in custom_settings:
+        st.markdown(f"<div style='text-align: center; margin-top: 30px;'>{custom_settings['footer_text']}</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
